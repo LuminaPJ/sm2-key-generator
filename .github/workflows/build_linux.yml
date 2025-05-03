@@ -15,6 +15,9 @@ jobs:
     strategy:
       matrix:
         arch: [ x64, arm64 ]
+        exclude:
+          - os: ubuntu-latest
+            arch: arm64
       fail-fast: false
 
     steps:
