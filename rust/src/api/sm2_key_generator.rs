@@ -22,7 +22,10 @@ pub fn init_app() {
 pub fn gen_sm2_key() -> (String, String) {
     use libsm::sm2::signature::SigCtx;
     let ctx = SigCtx::new();
-    let (pk, sk) = ctx.new_keypair().unwrap();
+    let (pk, sk) = match ctx.new_keypair(){
+        Ok(keys) => keys,
+        Err(e) => return("error".to_string(), e.to_string()),
+    };
     let mut pubkey_bytes = [0u8; 65];
     pubkey_bytes[0] = 0x04;
     pubkey_bytes[1..33].copy_from_slice(&pk.x.to_bytes());

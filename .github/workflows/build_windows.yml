@@ -1,0 +1,45 @@
+name: Build Flutter Windows EXE
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Windows EXE
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Setup Visual Studio
+        run: |
+          "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Run Flutter Doctor
+        run: flutter doctor -v
+
+      - name: Build Windows (Release)
+        run: flutter build windows --release
+
+      - name: Zip Artifacts
+        run: |
+          $sourceDir = "build\windows\runner\Release"
+          $zipFile = "flutter_app_windows.zip"
+          Compress-Archive -Path "$sourceDir\*" -DestinationPath $zipFile -Force
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: flutter_app_windows.zip
