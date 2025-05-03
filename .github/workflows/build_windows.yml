@@ -8,7 +8,11 @@ on:
 jobs:
   build:
     name: Build Windows EXE
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        architecture: [ x64, arm64 ]
 
     steps:
       - name: Checkout code
@@ -38,11 +42,12 @@ jobs:
       - name: Zip Artifacts
         run: |
           $sourceDir = "build\windows\runner\Release"
-          $zipFile = "flutter_app_windows.zip"
+          $architecture = "${{ matrix.architecture }}"
+          $zipFile = "flutter_app_windows_$architecture.zip"
           Compress-Archive -Path "$sourceDir\*" -DestinationPath $zipFile -Force
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-exe
-          path: flutter_app_windows.zip
+          name: windows-exe-${{ matrix.architecture }}
+          path: flutter_app_windows_${{ matrix.architecture }}.zip
