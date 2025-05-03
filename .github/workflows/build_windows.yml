@@ -11,10 +11,16 @@ on:
 jobs:
   build:
     name: Build Windows EXE
-    runs-on: windows-latest
+    runs-on: {{ matrix.os }}
     strategy:
       matrix:
-        arch: [ x64, arm64 ]
+        os: [ windows-2025, windows-11-arm ]
+        architecture: [ x64, arm64 ]
+      exclude:
+        - os: windows-2025
+          architecture: arm64
+        - os: windows-11-arm
+          architecture: x64
       fail-fast: false
 
     steps:
@@ -25,7 +31,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.29.0'
+          flutter-version: '3.29.3'
 
       - name: Setup Visual Studio
         run: |
