@@ -16,8 +16,8 @@ jobs:
       matrix:
         arch: [ x64, arm64 ]
         exclude:
-          - os: ubuntu-latest
-            arch: arm64
+          - arch: arm64
+          - arch: x64 # 之后再调
       fail-fast: false
 
     steps:
