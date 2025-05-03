@@ -54,7 +54,7 @@ jobs:
         run: flutter_rust_bridge_codegen generate
 
       - name: Build Linux (Release)
-        run: flutter build linux --release --target=${{ matrix.arch }}
+        run: flutter build linux --release
 
       - name: Package Linux Artifact
         run: |
