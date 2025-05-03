@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [ x64, arm64 ]  # 支持 AMD64 和 Arm64
+        arch: [ x64, arm64 ]
       fail-fast: false
 
     steps:
@@ -27,6 +27,12 @@ jobs:
           channel: 'stable'
           flutter-version: '3.29.3'
 
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
       - name: Setup Linux Build Tools
         run: |
           sudo apt-get update
@@ -37,6 +43,9 @@ jobs:
 
       - name: Run Flutter Doctor
         run: flutter doctor -v
+
+      - name: Install Flutter Rust Bridge Codegen
+        run: cargo install flutter_rust_bridge_codegen
 
       - name: Generate Rust Bindings
         run: flutter_rust_bridge_codegen generate
