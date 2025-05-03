@@ -11,13 +11,13 @@ on:
 jobs:
   build:
     name: Build Linux App
-    runs-on: ubuntu-latest
+    runs-on: # ubuntu-latest
     strategy:
       matrix:
         arch: [ x64, arm64 ]
         exclude:
           - arch: arm64
-          - arch: x64 # 之后再调
+          - arch: x64
       fail-fast: false
 
     steps:
