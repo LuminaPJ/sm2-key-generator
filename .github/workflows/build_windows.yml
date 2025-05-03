@@ -21,6 +21,8 @@ jobs:
             architecture: arm64
           - os: windows-11-arm
             architecture: x64
+          - os: windows-11-arm
+            architecture: arm64
       fail-fast: false
 
     steps:
@@ -38,6 +40,9 @@ jobs:
         with:
           toolchain: stable
           override: true
+
+      - name: Install Cargo Expand
+        run: cargo install cargo-expand
 
       - name: Setup Visual Studio
         run: |
@@ -60,7 +65,7 @@ jobs:
 
       - name: Zip Artifacts
         run: |
-          $sourceDir = "build\windows\runner\Release"
+          $sourceDir = "build\windows\${{ matrix.architecture }}\runner\Release"
           $architecture = "${{ matrix.architecture }}"
           $zipFile = "flutter_app_windows_$architecture.zip"
           Compress-Archive -Path "$sourceDir\*" -DestinationPath $zipFile -Force
