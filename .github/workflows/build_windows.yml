@@ -29,6 +29,9 @@ jobs:
       - name: Run Flutter Doctor
         run: flutter doctor -v
 
+      - name: Generate Rust Bindings
+        run: flutter_rust_bridge_codegen generate
+
       - name: Build Windows (Release)
         run: flutter build windows --release
 
