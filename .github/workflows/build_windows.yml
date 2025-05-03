@@ -11,11 +11,10 @@ on:
 jobs:
   build:
     name: Build Windows EXE
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     strategy:
       matrix:
-        os: [ windows-latest ]
-        architecture: [ x64, arm64 ]
+        arch: [ x64, arm64 ]
       fail-fast: false
 
     steps:
