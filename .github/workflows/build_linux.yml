@@ -11,13 +11,12 @@ on:
 jobs:
   build:
     name: Build Linux App
-    runs-on: # ubuntu-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch: [ x64, arm64 ]
         exclude:
           - arch: arm64
-          - arch: x64
       fail-fast: false
 
     steps:
@@ -61,11 +60,12 @@ jobs:
 
       - name: Package Linux Artifact
         run: |
-          cd build/linux/${{ matrix.arch }}/release/
-          tar -czf ../../../../flutter_app_linux_${{ matrix.arch }}.tar.gz bundle
+          cd build/linux/${{ matrix.arch }}/release/bundle/
+          tar -czf ../flutter_app_linux_${{ matrix.arch }}.tar.gz .
+          mv ../flutter_app_linux_${{ matrix.arch }}.tar.gz ./
 
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-app-${{ matrix.arch }}
-          path: build/linux/${{ matrix.arch }}/release/flutter_app_linux_${{ matrix.arch }}.tar.gz
+          path: build/linux/${{ matrix.arch }}/release/bundle/flutter_app_linux_${{ matrix.arch }}.tar.gz
