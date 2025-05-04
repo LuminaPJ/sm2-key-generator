@@ -1,4 +1,4 @@
-name: Build Flutter Windows EXE
+name: Build Flutter Windows
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build Windows EXE
+    name: Build Windows
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

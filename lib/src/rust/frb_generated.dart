@@ -64,7 +64,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.9.0';
 
   @override
-  int get rustContentHash => -1854216297;
+  int get rustContentHash => 150055732;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -78,6 +78,8 @@ abstract class RustLibApi extends BaseApi {
   Future<(String, String)> crateApiSm2KeyGeneratorGenSm2Key();
 
   Future<void> crateApiSm2KeyGeneratorInitApp();
+
+  Future<String> crateApiSm2KeyGeneratorSm2PkFromSk({required String skBase64});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -141,6 +143,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiSm2KeyGeneratorInitAppConstMeta =>
       const TaskConstMeta(debugName: "init_app", argNames: []);
+
+  @override
+  Future<String> crateApiSm2KeyGeneratorSm2PkFromSk({
+    required String skBase64,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(skBase64, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSm2KeyGeneratorSm2PkFromSkConstMeta,
+        argValues: [skBase64],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSm2KeyGeneratorSm2PkFromSkConstMeta =>
+      const TaskConstMeta(debugName: "sm2_pk_from_sk", argNames: ["skBase64"]);
 
   @protected
   String dco_decode_String(dynamic raw) {

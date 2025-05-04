@@ -680,6 +680,7 @@ dependencies = [
  "base64",
  "flutter_rust_bridge",
  "libsm",
+ "num-bigint",
  "rand 0.9.1",
 ]
 

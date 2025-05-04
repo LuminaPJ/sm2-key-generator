@@ -17,23 +17,30 @@ import 'package:sm2_key_generator/data/rust_init_state.dart';
 import '../src/rust/api/sm2_key_generator.dart';
 import '../src/rust/frb_generated.dart';
 
-/// 密钥生成状态类
+/// 私钥转公钥状态类
 /// @param _publicKey 公钥
 /// @param _privateKey 私钥
-/// @param _isLoading 是否正在生成密钥
+/// @param _isLoading 是否正在转换
 /// @param _error 错误信息
-class KeyGeneratorState with ChangeNotifier {
+class PriToPubState with ChangeNotifier {
+  String? _privateKeyFromUser;
   String? _publicKey;
   String? _privateKey;
   bool _isLoading = false;
   String? _error;
 
+  String? get privateKeyFromUser => _privateKeyFromUser;
   String? get publicKey => _publicKey;
   String? get privateKey => _privateKey;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> generateKeys(BuildContext context) async {
+  void updatePrivateKeyFromUser(String privateKeyFromUser){
+    _privateKeyFromUser = privateKeyFromUser;
+    notifyListeners();
+  }
+
+  Future<void> priToPubKey(BuildContext context, String privateKey) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -43,9 +50,9 @@ class KeyGeneratorState with ChangeNotifier {
       if (!rustInitState.isRustInitialized) {
         await rustInitState.initRust();
       }
-      var (pubKey, privKey) = await genSm2Key();
+      var pubKey = await sm2PkFromSk(skBase64: privateKey);
       _publicKey = pubKey;
-      _privateKey = privKey;
+      _privateKey = privateKey;
     } catch (e) {
       _error = e.toString();
     } finally {

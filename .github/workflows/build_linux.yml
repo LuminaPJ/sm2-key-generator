@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build Linux App
+    name: Build Linux
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -67,5 +67,5 @@ jobs:
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linux-app-${{ matrix.arch }}
+          name: flutter-app-linux-${{ matrix.arch }}
           path: build/linux/${{ matrix.arch }}/release/bundle/flutter_app_linux_${{ matrix.arch }}.tar.gz

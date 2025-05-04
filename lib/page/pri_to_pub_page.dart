@@ -14,18 +14,54 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sm2_key_generator/data/pri_to_pub_state.dart';
 
-import '../data/key_generator_state.dart';
+class PriToPubPage extends StatefulWidget {
+  const PriToPubPage({super.key});
 
-class SM2KeyGeneratorHomePage extends StatelessWidget {
-  const SM2KeyGeneratorHomePage({super.key});
+  @override
+  State<PriToPubPage> createState() => _PriToPubPageState();
+}
+
+class _PriToPubPageState extends State<PriToPubPage> {
+  late TextEditingController _privateKeyController;
+  late PriToPubState _priToPubState;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _priToPubState = context.read<PriToPubState>();
+    _privateKeyController = TextEditingController(
+      text: _priToPubState.privateKeyFromUser,
+    );
+
+    _priToPubState.addListener(_updateController);
+  }
+
+  void _updateController() {
+    final state = context.read<PriToPubState>();
+    if (state.privateKeyFromUser != _privateKeyController.text) {
+      _privateKeyController.text = state.privateKeyFromUser ?? '';
+      _privateKeyController.selection = TextSelection.fromPosition(
+        TextPosition(offset: state.privateKeyFromUser?.length ?? 0),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _priToPubState.removeListener(_updateController);
+    _privateKeyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<KeyGeneratorState>(context);
+    final state = Provider.of<PriToPubState>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr('app_name'))),
+      appBar: AppBar(title: Text(context.tr('pri_to_pub_title'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(
           left: 16.0,
@@ -36,9 +72,11 @@ class SM2KeyGeneratorHomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _KeyCard(title: context.tr('public_key'), value: state.publicKey),
-            const SizedBox(height: 12),
-            _KeyCard(title: context.tr('private_key'), value: state.privateKey),
+            _InputCard(
+              title: context.tr('input_private_key'),
+              placeholder: context.tr('input_private_key_placeholder'),
+              controller: _privateKeyController,
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -55,7 +93,13 @@ class SM2KeyGeneratorHomePage extends StatelessWidget {
                             ),
                           )
                           : const SizedBox.shrink(),
-                  onPressed: state.isLoading ? null : () => state.generateKeys(context),
+                  onPressed:
+                      state.isLoading || state.privateKeyFromUser == null
+                          ? null
+                          : () => state.priToPubKey(
+                            context,
+                            state.privateKeyFromUser!,
+                          ),
                   label: Text(context.tr('generate')),
                 ),
                 const SizedBox(width: 12),
@@ -71,6 +115,10 @@ class SM2KeyGeneratorHomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            _KeyCard(title: context.tr('public_key'), value: state.publicKey),
+            const SizedBox(height: 12),
+            _KeyCard(title: context.tr('private_key'), value: state.privateKey),
+            const SizedBox(height: 12),
             _InfoCard(),
           ],
         ),
@@ -80,7 +128,7 @@ class SM2KeyGeneratorHomePage extends StatelessWidget {
 
   Future<void> _copyToClipboard(
     BuildContext context,
-    KeyGeneratorState state,
+    PriToPubState state,
   ) async {
     var publicKey = state.publicKey;
     var privateKey = state.privateKey;
@@ -93,6 +141,46 @@ class SM2KeyGeneratorHomePage extends StatelessWidget {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.tr('copy_success'))));
+  }
+}
+
+class _InputCard extends StatelessWidget {
+  final String title;
+  final String placeholder;
+  final TextEditingController controller;
+
+  const _InputCard({
+    required this.title,
+    required this.placeholder,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0.0,
+      color: Theme.of(context).colorScheme.surfaceContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: placeholder,
+              ),
+              onChanged: (value) {
+                context.read<PriToPubState>().updatePrivateKeyFromUser(value);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -150,7 +238,7 @@ class _InfoCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              context.tr('tips_content'),
+              context.tr('tips_pri_to_pub_content'),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),

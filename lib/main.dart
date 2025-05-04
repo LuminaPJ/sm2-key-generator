@@ -14,6 +14,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:sm2_key_generator/data/pri_to_pub_state.dart';
+import 'package:sm2_key_generator/data/rust_init_state.dart';
+import 'package:sm2_key_generator/page/pri_to_pub_page.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'data/key_generator_state.dart';
@@ -36,13 +39,20 @@ void main() async {
   });
 
   runApp(
-    EasyLocalization(
-      supportedLocales: [Locale('zh', 'CN')],
-      path: 'assets/translations',
-      fallbackLocale: Locale('zh', 'CN'),
-      child: ChangeNotifierProvider(
-        create: (_) => KeyGeneratorState(),
-        child: SM2KeyGeneratorApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RustInitState()),
+        ChangeNotifierProvider(create: (_) => PriToPubState()),
+        ChangeNotifierProvider(create: (_) => KeyGeneratorState()),
+      ],
+      child: EasyLocalization(
+        supportedLocales: [Locale('zh', 'CN')],
+        path: 'assets/translations',
+        fallbackLocale: Locale('zh', 'CN'),
+        child: ChangeNotifierProvider(
+          create: (_) => KeyGeneratorState(),
+          child: SM2KeyGeneratorApp(),
+        ),
       ),
     ),
   );
@@ -88,6 +98,11 @@ List<AppDestination> createDestinations(BuildContext context) {
       context.tr('home'),
       Icon(Icons.home_outlined),
       Icon(Icons.home),
+    ),
+    AppDestination(
+      context.tr('pri_to_pub'),
+      Icon(Icons.vpn_key_outlined),
+      Icon(Icons.vpn_key),
     ),
     AppDestination(
       context.tr('about'),
@@ -196,6 +211,8 @@ class _SM2KeyGeneratorPageState extends State<SM2KeyGeneratorPage> {
       case 0:
         return SM2KeyGeneratorHomePage();
       case 1:
+        return PriToPubPage();
+      case 2:
         return AboutPage();
       default:
         return Center(child: Text('Page Index = $screenIndex'));
