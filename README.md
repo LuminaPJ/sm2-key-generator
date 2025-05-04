@@ -16,7 +16,8 @@
 
 该项目为 Flutter + Rust 混合开发项目，Flutter 部分承载整体应用框架，Rust 部分承载 SM2 密钥对生成逻辑与基于已知 SM2 私钥推导出公钥逻辑。
 
-如需对该项目进行开发，需在本地配置 Flutter 和 Rust 开发环境。 敬请参阅：
+如需对该项目进行开发，需在本地配置 Flutter 和 Rust 开发环境。敬请参阅：
+
 - [Flutter 开发环境配置文档](https://docs.flutter.dev/get-started/install)（对于中国大陆网络环境，请前往[此文档](https://docs.flutter.cn/get-started/install)）
 - [Rust 与 Cargo 开发环境配置文档](https://www.rust-lang.org/zh-CN/tools/install)
 
