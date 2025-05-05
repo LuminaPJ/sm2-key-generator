@@ -26,6 +26,10 @@
 配置完成后，运行以下命令以启动项目：
 
 ```shell
+cargo install flutter_rust_bridge_codegen
+```
+
+```shell
 flutter pub get
 ```
 
