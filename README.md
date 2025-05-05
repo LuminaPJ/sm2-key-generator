@@ -36,3 +36,9 @@ flutter_rust_bridge_codegen generate
 ```shell
 flutter run
 ```
+
+由于 Rust 代码经过 [Flutter/Dart <-> Rust 绑定生成器](https://cjycode.com/flutter_rust_bridge/)生成绑定代码，因此在每次改动 Rust 代码之后，请运行以下命令以重新生成绑定代码：
+
+```shell
+flutter_rust_bridge_codegen generate
+```
