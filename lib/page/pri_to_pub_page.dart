@@ -96,7 +96,7 @@ class _PriToPubPageState extends State<PriToPubPage> {
                   onPressed:
                       state.isLoading ||
                               state.privateKeyFromUser == null ||
-                              state.privateKeyFromUser == ''
+                              (state.privateKeyFromUser?.trim() ?? '').isEmpty
                           ? null
                           : () => state.priToPubKey(
                             context,
